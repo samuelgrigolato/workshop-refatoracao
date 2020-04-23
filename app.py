@@ -15,7 +15,7 @@ def liberar_conexao_gerenciada(_):
 
 @app.route('/leiloes/<id_leilao>', methods=['GET'])
 def get_detalhes_do_leilao(id_leilao):
-  with db.abrir_conexao() as conexao, conexao.cursor() as cur:
+  with db.conexao_gerenciada().cursor() as cur:
     cur.execute("""
       SELECT id, descricao, criador, data, diferenca_minima
       FROM leiloes
