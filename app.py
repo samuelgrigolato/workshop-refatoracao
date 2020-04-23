@@ -79,37 +79,3 @@ def registrar_lance_minimo(id_leilao):
       VALUES (%s, %s, %s, now())
     """, (id_leilao, valor, id_usuario))
   return '', HTTPStatus.NO_CONTENT
-
-
-@app.route('/leiloes/proximo', methods=['GET'])
-def get_detalhes_do_proximo_leilao():
-  with db.abrir_conexao() as conexao, conexao.cursor() as cur:
-    cur.execute("""
-      SELECT id, descricao, criador, data, diferenca_minima
-      FROM leiloes
-      ORDER BY data
-      LIMIT 1
-    """)
-    leilao = cur.fetchone()
-    id_leilao = leilao[0]
-    cur.execute("""
-      SELECT id, valor, comprador, data
-      FROM lances
-      WHERE id_leilao = %s
-      ORDER BY data DESC
-      LIMIT 1
-    """, (id_leilao, ))
-    lance = cur.fetchone()
-    return jsonify({
-      'id': leilao[0],
-      'descricao': leilao[1],
-      'criador': leilao[2],
-      'data': leilao[3].isoformat(),
-      'diferenca_minima': leilao[4],
-      'ultimo_lance': {
-        'id': lance[0],
-        'valor': lance[1],
-        'comprador': lance[2],
-        'data': lance[3].isoformat()
-      } if lance is not None else None
-    })
