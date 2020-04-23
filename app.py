@@ -2,6 +2,7 @@ from flask import Flask, jsonify, Response, request
 from http import HTTPStatus
 
 import db
+import repositorio.leilao
 
 
 app = Flask(__name__)
@@ -49,31 +50,14 @@ def registrar_lance(id_leilao):
   dados = request.get_json()
   id_usuario = request.headers['X-Id-Usuario'] # simulação meia boca de autenticação
   with db.conexao_gerenciada().cursor() as cur:
-    cur.execute("""
-      SELECT valor
-      FROM lances
-      WHERE id_leilao = %s
-      ORDER BY data DESC
-      LIMIT 1
-    """, (id_leilao, ))
-    ultimo_lance = cur.fetchone()
-    if ultimo_lance is not None:
-      valor_ultimo_lance = ultimo_lance[0]
+    valor_ultimo_lance = repositorio.leilao.buscar_valor_ultimo_lance(cur, id_leilao)
+    if valor_ultimo_lance is not None:
       if valor_ultimo_lance >= dados['valor']:
         return 'Lance deve ser maior que o último.', HTTPStatus.BAD_REQUEST
-      cur.execute("""
-        SELECT diferenca_minima
-        FROM leiloes
-        WHERE id = %s
-      """, (id_leilao, ))
-      leilao = cur.fetchone()
-      diferenca_minima = leilao[0]
+      diferenca_minima = repositorio.leilao.buscar_diferenca_minima(cur, id_leilao)
       if valor_ultimo_lance + diferenca_minima > dados['valor']:
         return 'Lance deve ser maior que o atual mais a diferença mínima.', HTTPStatus.BAD_REQUEST
-    cur.execute("""
-      INSERT INTO lances (id_leilao, valor, comprador, data)
-      VALUES (%s, %s, %s, now())
-    """, (id_leilao, dados['valor'], id_usuario))
+    repositorio.leilao.inserir_lance(cur, id_leilao, dados['valor'], id_usuario)
   return '', HTTPStatus.NO_CONTENT
 
 
