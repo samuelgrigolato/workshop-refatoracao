@@ -7,6 +7,11 @@ import db
 app = Flask(__name__)
 
 
+@app.teardown_appcontext
+def liberar_conexao_gerenciada(_):
+  db.liberar_conexao_gerenciada(testando=app.config['TESTING'])
+
+
 @app.route('/leiloes/<id_leilao>', methods=['GET'])
 def get_detalhes_do_leilao(id_leilao):
   with db.abrir_conexao() as conexao, conexao.cursor() as cur:
@@ -43,7 +48,7 @@ def get_detalhes_do_leilao(id_leilao):
 def registrar_lance(id_leilao):
   dados = request.get_json()
   id_usuario = request.headers['X-Id-Usuario'] # simulação meia boca de autenticação
-  with db.abrir_conexao() as conexao, conexao.cursor() as cur:
+  with db.conexao_gerenciada().cursor() as cur:
     cur.execute("""
       SELECT valor
       FROM lances
