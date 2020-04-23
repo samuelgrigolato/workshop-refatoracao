@@ -26,3 +26,9 @@ def test_com_lances(con, client):
   ultimo_lance = json['ultimo_lance']
   assert ultimo_lance is not None
   assert ultimo_lance['id'] == -2
+  lances = json['lances']
+  assert lances is not None
+  assert len(lances) == 3
+  assert lances[0]['id'] == -3
+  assert lances[1]['id'] == -1
+  assert lances[2]['id'] == -2

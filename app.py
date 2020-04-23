@@ -26,10 +26,10 @@ def get_detalhes_do_leilao(id_leilao):
       SELECT id, valor, comprador, data
       FROM lances
       WHERE id_leilao = %s
-      ORDER BY data DESC
-      LIMIT 1
+      ORDER BY data
     """, (id_leilao, ))
-    lance = cur.fetchone()
+    lances = cur.fetchall()
+    ultimo_lance = lances[-1] if len(lances) > 0 else None
     return jsonify({
       'id': leilao[0],
       'descricao': leilao[1],
@@ -37,11 +37,20 @@ def get_detalhes_do_leilao(id_leilao):
       'data': leilao[3].isoformat(),
       'diferenca_minima': leilao[4],
       'ultimo_lance': {
-        'id': lance[0],
-        'valor': lance[1],
-        'comprador': lance[2],
-        'data': lance[3].isoformat()
-      } if lance is not None else None
+        'id': ultimo_lance[0],
+        'valor': ultimo_lance[1],
+        'comprador': ultimo_lance[2],
+        'data': ultimo_lance[3].isoformat()
+      } if ultimo_lance is not None else None,
+      'lances': [
+        {
+          'id': lance[0],
+          'valor': lance[1],
+          'comprador': lance[2],
+          'data': lance[3].isoformat()
+        }
+        for lance in lances
+      ]
     })
 
 
