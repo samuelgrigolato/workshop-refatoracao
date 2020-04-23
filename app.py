@@ -57,8 +57,19 @@ def registrar_lance(id_leilao):
       LIMIT 1
     """, (id_leilao, ))
     ultimo_lance = cur.fetchone()
-    if ultimo_lance is not None and ultimo_lance[0] >= dados['valor']:
-      return 'Lance deve ser maior que o último.', HTTPStatus.BAD_REQUEST
+    if ultimo_lance is not None:
+      valor_ultimo_lance = ultimo_lance[0]
+      if valor_ultimo_lance >= dados['valor']:
+        return 'Lance deve ser maior que o último.', HTTPStatus.BAD_REQUEST
+      cur.execute("""
+        SELECT diferenca_minima
+        FROM leiloes
+        WHERE id = %s
+      """, (id_leilao, ))
+      leilao = cur.fetchone()
+      diferenca_minima = leilao[0]
+      if valor_ultimo_lance + diferenca_minima > dados['valor']:
+        return 'Lance deve ser maior que o atual mais a diferença mínima.', HTTPStatus.BAD_REQUEST
     cur.execute("""
       INSERT INTO lances (id_leilao, valor, comprador, data)
       VALUES (%s, %s, %s, now())
