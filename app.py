@@ -49,6 +49,8 @@ def registrar_lance(id_leilao):
       return 'Lance deve ser maior que o último.', HTTPStatus.BAD_REQUEST
     except modelo.leilao.ValorMenorQueDiferencaMinima:
       return 'Lance deve ser maior que o atual mais a diferença mínima.', HTTPStatus.BAD_REQUEST
+    except modelo.leilao.LanceDoCriador:
+      return 'Criador não pode dar lance.', HTTPStatus.BAD_REQUEST
   return '', HTTPStatus.NO_CONTENT
 
 
@@ -59,5 +61,8 @@ def registrar_lance_minimo(id_leilao):
     valor_ultimo_lance = repositorio.leilao.buscar_valor_ultimo_lance(cur, id_leilao)
     diferenca_minima = repositorio.leilao.buscar_diferenca_minima(cur, id_leilao)
     valor = 1 if valor_ultimo_lance is None else valor_ultimo_lance + diferenca_minima
-    modelo.leilao.registrar_lance(cur, id_leilao, valor, id_usuario)
+    try:
+      modelo.leilao.registrar_lance(cur, id_leilao, valor, id_usuario)
+    except modelo.leilao.LanceDoCriador:
+      return 'Criador não pode dar lance.', HTTPStatus.BAD_REQUEST
   return '', HTTPStatus.NO_CONTENT

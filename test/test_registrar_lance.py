@@ -43,3 +43,14 @@ def test_menor_que_diferenca_minima(con, client):
     headers={ 'x_id_usuario': '5bfd3460-468e-4b30-bf1e-6917869b258c' }
   )
   assert resp.status_code == 400
+
+
+def test_lance_do_criador(con, client):
+  with con.cursor() as cur:
+    fabricar_leilao(cur, id_=-1, criador='5bfd3460-468e-4b30-bf1e-6917869b258c')
+  resp = client.post(
+    '/leiloes/-1/lances',
+    json={ 'valor': 1 },
+    headers={ 'x_id_usuario': '5bfd3460-468e-4b30-bf1e-6917869b258c' }
+  )
+  assert resp.status_code == 400
