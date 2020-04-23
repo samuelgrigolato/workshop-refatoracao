@@ -56,18 +56,9 @@ def registrar_lance(id_leilao):
 @app.route('/leiloes/<id_leilao>/lances/minimo', methods=['POST'])
 def registrar_lance_minimo(id_leilao):
   id_usuario = request.headers['X-Id-Usuario'] # simulação meia boca de autenticação
-  with db.abrir_conexao() as conexao, conexao.cursor() as cur:
-    cur.execute("""
-      SELECT valor
-      FROM lances
-      WHERE id_leilao = %s
-      ORDER BY data DESC
-      LIMIT 1
-    """, (id_leilao, ))
-    ultimo_lance = cur.fetchone()
-    valor = 1 if ultimo_lance is None else ultimo_lance[0] + 1
-    cur.execute("""
-      INSERT INTO lances (id_leilao, valor, comprador, data)
-      VALUES (%s, %s, %s, now())
-    """, (id_leilao, valor, id_usuario))
+  with db.conexao_gerenciada().cursor() as cur:
+    valor_ultimo_lance = repositorio.leilao.buscar_valor_ultimo_lance(cur, id_leilao)
+    diferenca_minima = repositorio.leilao.buscar_diferenca_minima(cur, id_leilao)
+    valor = 1 if valor_ultimo_lance is None else valor_ultimo_lance + diferenca_minima
+    repositorio.leilao.inserir_lance(cur, id_leilao, valor, id_usuario)
   return '', HTTPStatus.NO_CONTENT
