@@ -16,19 +16,8 @@ def liberar_conexao_gerenciada(_):
 @app.route('/leiloes/<id_leilao>', methods=['GET'])
 def get_detalhes_do_leilao(id_leilao):
   with db.conexao_gerenciada().cursor() as cur:
-    cur.execute("""
-      SELECT id, descricao, criador, data, diferenca_minima
-      FROM leiloes
-      WHERE id = %s
-    """, (id_leilao, ))
-    leilao = cur.fetchone()
-    cur.execute("""
-      SELECT id, valor, comprador, data
-      FROM lances
-      WHERE id_leilao = %s
-      ORDER BY data
-    """, (id_leilao, ))
-    lances = cur.fetchall()
+    leilao = repositorio.leilao.buscar(cur, id_leilao)
+    lances = repositorio.leilao.buscar_lances(cur, id_leilao)
     ultimo_lance = lances[-1] if len(lances) > 0 else None
     return jsonify({
       'id': leilao[0],

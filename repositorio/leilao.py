@@ -1,5 +1,24 @@
 
 
+def buscar(cur, id_leilao):
+  cur.execute("""
+    SELECT id, descricao, criador, data, diferenca_minima
+    FROM leiloes
+    WHERE id = %s
+  """, (id_leilao, ))
+  return cur.fetchone()
+
+
+def buscar_lances(cur, id_leilao):
+  cur.execute("""
+    SELECT id, valor, comprador, data
+    FROM lances
+    WHERE id_leilao = %s
+    ORDER BY data
+  """, (id_leilao, ))
+  return cur.fetchall()
+
+
 def buscar_valor_ultimo_lance(cur, id_leilao):
   cur.execute("""
     SELECT valor
