@@ -1,4 +1,3 @@
-import app
 import db
 
 
