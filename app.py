@@ -25,12 +25,6 @@ def get_detalhes_do_leilao(id_leilao):
       'criador': leilao[2],
       'data': leilao[3].isoformat(),
       'diferenca_minima': leilao[4],
-      'ultimo_lance': {
-        'id': ultimo_lance[0],
-        'valor': ultimo_lance[1],
-        'comprador': ultimo_lance[2],
-        'data': ultimo_lance[3].isoformat()
-      } if ultimo_lance is not None else None,
       'lances': [
         {
           'id': lance[0],

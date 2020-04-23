@@ -9,7 +9,7 @@ def test_sem_lances(con, client):
   json = resp.json
   assert json['criador'] == 'cfb795dc-7c3d-406e-8cac-ae310e82e1b2'
   assert json['id'] == -1
-  assert json['ultimo_lance'] is None
+  assert json['lances'] == []
 
 
 def test_com_lances(con, client):
@@ -23,9 +23,6 @@ def test_com_lances(con, client):
   json = resp.json
   assert json['criador'] == 'cfb795dc-7c3d-406e-8cac-ae310e82e1b2'
   assert json['id'] == -1
-  ultimo_lance = json['ultimo_lance']
-  assert ultimo_lance is not None
-  assert ultimo_lance['id'] == -2
   lances = json['lances']
   assert lances is not None
   assert len(lances) == 3
