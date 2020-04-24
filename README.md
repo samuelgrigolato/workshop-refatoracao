@@ -4,6 +4,23 @@ Toda pessoa que trabalha com software já passou, ou vai passar, pela experiênc
 
 Qual a postura esperada desse profissional? Até onde é correto “colocar a culpa” na equipe de desenvolvimento anterior? Até onde é válido barrar demandas devido a limitações da arquitetura atual do sistema? Nesse workshop você será guiado por um processo simulado dessa situação, tendo a oportunidade de praticar desde a parte técnica (refatoração segura) quanto a parte ética e profissional dessa tarefa que normalmente negligenciamos durante nossa capacitação profissional.
 
+## Como usar este repositório?
+
+Aqui você vai encontrar uma simulação de trabalho em um código *legado*, até transformá-lo em algo mais fácil de se manter. A melhor maneira de acompanhar a evolução do código é analisar o histórico de commits. Cada item é autocontido e termina em um estado onde a aplicação continua funcionando. Resumo do que vai sendo feito conforme os commits vão acontecendo:
+
+- Adição de infraestrutura de testes automatizados;
+- Correção de defeito: diferença mínima no lance não é respeitada;
+- Alteração de funcionalidade: aplicação mostra todos os lances ao invés do último apenas;
+- Remoção de funcionalidade: detalhes do próximo leilão;
+- Adição de funcionalidade: criador do lance não deve mais ser capaz de dar lance.
+
+Todas as intervenções no código seguem algumas regras de ouro:
+
+- Nunca quebre a interface com usuários (no caso de uma API os usuários são os frontend/serviços clientes dela) existentes;
+- Acabe com código morto (não utilizado);
+- Cubra completamente com testes a funcionalidade antes de alterá-la;
+- Aplique refatorações conforme a cobertura de testes for aumentando e elas se mostrarem possíveis/viáveis.
+
 ## Pré-requisitos
 
 Para seguir este workshop você precisa ter instalado na sua máquina:
